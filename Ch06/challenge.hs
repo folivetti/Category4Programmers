@@ -11,4 +11,7 @@ area (Square s) = s * s
 circ :: Shape -> Float
 circ (Circle r) = 2.0 * pi * r
 circ (Rect d h) = 2.0 * (d + h)
-circ (Square s) = 4.0 * s
+--circ (Square s) = 4.0 * s
+
+main = do
+    print (circ (Circle 10))
