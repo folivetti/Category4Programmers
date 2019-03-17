@@ -48,9 +48,9 @@ move (x,y) s = replace y (replace x (const mv)) s
 nextMv s = if even (length nadas) then X else O
   where nadas = filter (/=Nada) $ concat s
 
-gameStates :: [Moves] -> State
-gameStates = index t 
+gameState :: [Moves] -> State
+gameState = index t 
   where t = tabulate (makeMoves initState) :: Tree State
 
 
-main = print $ gameStates [(1,0), (0,0), (2,2), (1,1)]
+main = print $ gameState [(1,0), (0,0), (2,2), (1,1)]
