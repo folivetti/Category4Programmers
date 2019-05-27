@@ -14,4 +14,4 @@ circ (Rect d h) = 2.0 * (d + h)
 --circ (Square s) = 4.0 * s
 
 main = do
-    print (circ (Circle 10))
+    print (area (Circle 2))
