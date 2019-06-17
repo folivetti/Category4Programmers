@@ -48,6 +48,9 @@ kEmboss  = partial(kernel, emboss)
 img = imread("church.jpg", flatten=True)
 fs = Store(img2fun(img), (0,0))
 
-fs = fs.extend(kSharpen).extend(kEmboss)
+fs = (fs
+      .extend(kSharpen)
+      .extend(kEmboss)
+     )
 plt.imshow(rebuild(fs, *img.shape), cmap='gray', vmin=0, vmax=255)
 plt.show()
