@@ -1066,6 +1066,19 @@ q :: c -> b
 
 ## Tipo Produto {.fragile}
 
+Basicamente procuramos pelo seguinte padrão:
+
+\centering
+\begin{tikzpicture}[auto, scale=2, transform shape]
+\node (c) {$c$};
+\node (a) [below left of=c, yshift=-10] {$a$};
+\node (b) [below right of=c, yshift=-10] {$b$};
+\draw[->, black,solid,line width=1mm,fill=black] (c) edge node[above, xshift=-1, yshift=-5] {$p$} (a);
+\draw[->, black,solid,line width=1mm,fill=black] (c) edge node[yshift=-5] {$q$} (b);
+\end{tikzpicture}
+
+## Tipo Produto {.fragile}
+
 Pensando no par `Int` e `Bool`, podemos definir `c :: Int` fazendo:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
@@ -1222,6 +1235,20 @@ Vamos pensar agora no padrão dual ao produto, chamado **coproduto**:
 i :: a -> c
 j :: b -> c
 ```
+
+## Tipo Coproduto {.fragile}
+
+Agora queremos o padrão dual ao produto!
+
+\centering
+\begin{tikzpicture}[auto, scale=2, transform shape]
+\node (c) {$c$};
+\node (a) [below left of=c, yshift=-10] {$a$};
+\node (b) [below right of=c, yshift=-10] {$b$};
+\draw[->, black,solid,line width=1mm,fill=black] (a) edge node[above, yshift=-5, xshift=-3] {$i$} (c);
+\draw[->, black,solid,line width=1mm,fill=black] (b) edge node[above, yshift=-5, xshift=4] {$j$} (c);
+\end{tikzpicture}
+
 
 ## Tipo Coproduto {.fragile}
 
