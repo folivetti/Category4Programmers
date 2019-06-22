@@ -726,24 +726,9 @@ type Writer a = (a, String)
 
 ## Categoria Writer
 
-Para que o tipo `Writer` forme uma categoria, precisamos de uma função identidade.
+Para que o tipo `Writer` forme uma categoria, precisamos de uma função composição e uma identidade.
 
-Essa função deve ter a propriedade de que, quando composta com uma função $f$, retorne o próprio $f$.
-
-## Identidade Writer {.fragile}
-
-Vamos analisar se essa função atende nossa propriedade:
-
-```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
-return :: a -> Writer a
-return x = (x, "")
-```
-
-(o nome `return` será explicado no final do curso)
-
-## Pergunta
-
-Utilizamos a string vazia na função `return` por ela ser um elemento neutro da concatenação. Tenho um elemento neutro, um operador binário (concatenação) e o tipo `String`. O que isso forma?
+A função identidade deve ter como propriedade $f \circ id = id \circ f = f$.
 
 ## Composição: >=> {.fragile}
 
@@ -769,6 +754,35 @@ is_even x = (x `mod` 2 == 0, "even")
 is_odd :: Int -> Writer Bool
 is_odd = is_even >=> notW
 ```
+
+## Identidade Writer {.fragile}
+
+Pensando na composição, como deve ser nossa função identidade?
+
+```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
+(id >=> f) = \a ->
+  let (b, s1) = id a
+      (c, s2) = f b
+  in (c, s1 ++ s2)
+```
+
+Para que a função seja identidade temos que `b = x` e `s1 ++ s2 = s2`.
+
+## Identidade Writer {.fragile}
+
+Vamos analisar se essa função atende nossa propriedade:
+
+```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
+return :: a -> Writer a
+return x = (x, "")
+```
+
+(o nome `return` será explicado no final do curso)
+
+## Pergunta
+
+Utilizamos a string vazia na função `return` por ela ser um elemento neutro da concatenação. Tenho um elemento neutro, um operador binário (concatenação) e o tipo `String`. O que isso forma?
+
 
 ## Categoria Writer C++ {.fragile}
 
