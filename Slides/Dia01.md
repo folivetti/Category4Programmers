@@ -6,6 +6,30 @@ mainfont: Padauk
 fontsize: 12pt
 ---
 
+# Sobre o Curso
+
+## Sobre o Curso
+
+Baseado no curso de Bartosz Milewski disponível em https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/
+
+## Sobre o Curso
+
+O material do curso está disponível em:
+
+http://pesquisa.ufabc.edu.br/haskell/categorias.html
+
+e
+
+http://pesquisa.ufabc.edu.br/haskell/cursos/19.q2.categorias/
+
+## Sobre o Curso
+
+Os códigos estão disponíveis no repositório https://github.com/folivetti/Category4Programmers
+
+## Sobre o Curso
+
+Para obter o certificado de participação, o aluno deve fazer pelo menos 70% das atividades propostas submetidas no Github.
+
 # Teoria das Categorias
 
 ## Teoria das Categorias
@@ -766,7 +790,7 @@ Pensando na composição, como deve ser nossa função identidade?
   in (c, s1 ++ s2)
 ```
 
-Para que a função seja identidade temos que `b = x` e `s1 ++ s2 = s2`.
+Para que a função seja identidade temos que `b = a` e `s1 ++ s2 = s2`.
 
 ## Identidade Writer {.fragile}
 
@@ -1028,7 +1052,7 @@ ifthenelse False = 20
 
 ## Tipos Compostos
 
-Digamos que eu tenha uma função que recebe um `Bool` e, dependendo do valor, deve retornar ou um inteiro, ou um caractere.
+Digamos que eu tenha uma função que recebe um `Bool` e, dependendo do valor, deve retornar ou um inteiro, ou um caracter.
 
 Também pense no tipo que representa produtos em nosso estoque, eles são compostos por `Int` e `Double`, como represento tais tipos?
 
@@ -1052,22 +1076,6 @@ A Construção Universal é feito em dois passos:
 
 - Criamos um padrão que compreende o que nos interessa (e outros que não).
 - Criamos um rank para que o que nos interessa fique em primeiro lugar.
-
-## Isomorfismo
-
-**Isomorfismo:** relação que indica que dois objetos são estruturalmente iguais.
-
-Nem sempre conseguimos comparar dois objetos por igualdade.
-
-
-## Isomorfismo {.fragile}
-
-Um objeto `a` é isomórfico ao objeto `b` se temos:
-
-```Haskell
-f . g = id
-g . f = id
-```
 
 ## Tipo Produto {.fragile}
 
@@ -1093,7 +1101,13 @@ Basicamente procuramos pelo seguinte padrão:
 
 ## Tipo Produto {.fragile}
 
-Pensando no par `Int` e `Bool`, podemos definir `c :: Int` fazendo:
+Para exemplificar, vamos imaginar que nosso objetivo é obter o produto entre um `Int` e um `Bool`.
+
+Se definirmos `c :: Int` conseguimos implementar `p, q`?
+
+## Tipo Produto {.fragile}
+
+Podemos definir `c :: Int` fazendo:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 p :: Int -> Int
@@ -1105,7 +1119,9 @@ q _ = True
 
 ## Tipo Produto {.fragile}
 
-Outro candidato é fazer com que `c :: (Int, Int, Bool)`:
+Se definirmos `c :: (Int, Int, Bool)` conseguimos implementar `p, q`?
+
+## Tipo Produto {.fragile}
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 p :: (Int, Int, Bool) -> Int
@@ -1113,6 +1129,20 @@ p (x, _, _) = x
 
 q :: (Int, Int, Bool) -> Bool
 q (_, _, b) = b
+```
+
+## Tipo Produto {.fragile}
+
+Se definirmos `c :: (Int, Bool)` conseguimos implementar `p, q`?
+
+## Tipo Produto {.fragile}
+
+```{.haskell frame=lines framerule=2pt linenos=true}
+p :: (Int, Bool) -> Int
+p (x, _) = x -- fst
+
+q :: (Int, Bool) -> Bool
+q (_, b) = b -- snd
 ```
 
 ## Tipo Produto {.fragile}
@@ -1128,7 +1158,11 @@ q' = q . m
 
 ## Tipo Produto {.fragile}
 
-Pensando na opção $c = (Int, Bool)$ e nas alternativas anteriores, podemos fazer:
+Pensando na opção $c = (Int, Bool)$ e nas alternativas anteriores, vamos criar `m1, m2` que satisfaça as propriedades.
+
+## Tipo Produto {.fragile}
+
+Podemos fazer:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 m1 x = (x, True)
@@ -1138,13 +1172,17 @@ m2 (x, _, b) = (x, b)
 
 ## Tipo Produto {.fragile}
 
-Vamos tentar fazer o oposto agora, encontrar um `m2'` que converta `c` na segunda opção de `c'`:
+Vamos tentar fazer o oposto agora, encontrar um `m2'` que converta `c :: (Int, Bool)` em `c' :: (Int, Int, Bool)`!
+
+## Tipo Produto {.fragile}
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 m2' (x, b) = (x, 1, b)
 ```
 
-mas também podemos fazer:
+## Tipo Produto {.fragile}
+
+Mas também podemos fazer:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 m2' (x, b) = (x, 2, b)
@@ -1156,7 +1194,23 @@ Conclusão: o melhor tipo para representar o nosso tipo produto é uma tupla!
 
 ## Exercício 
 
-O tipo produto `((Int, Bool), Int)` é isomórfico com o tipo `(Int, (Bool, Int))`? Defina duas funções que converta uma em outra e sejam inversas.
+O tipo produto `((Int, Bool), Int)` é isomorfos com o tipo `(Int, (Bool, Int))`? Defina duas funções que converta uma em outra e sejam inversas.
+
+## Isomorfismo
+
+**Isomorfismo:** relação que indica que dois objetos são estruturalmente iguais.
+
+Nem sempre conseguimos comparar dois objetos por igualdade.
+
+
+## Isomorfismo {.fragile}
+
+Um objeto `a` é isomorfos ao objeto `b` se temos:
+
+```Haskell
+f . g = id
+g . f = id
+```
 
 ## Exercício
 
@@ -1168,8 +1222,11 @@ Como temos um tipo chamado *produto*, será que ele possui as mesmas propriedade
 
 ## Tipo Algébrico Produto {.fragile}
 
-Na álgebra o produto possui um elemento neutro, que tem valor $1$. Em tipos temos o unit:
+Na álgebra o produto possui um elemento neutro, que tem valor $1$. Na categoria dos tipos, o unit representa esse valor.
 
+Prove que `(a, ())` é isomorfo a `a`.
+
+## Tipo Algébrico Produto {.fragile}
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 f :: (a, ()) -> a
@@ -1182,7 +1239,13 @@ f . g = id
 g . f = id
 ```
 
-Ou seja, o tipo `(a, ())` (e analogamente `((), a)`) são isomórficos a `a`, pois carregam a mesma informação.
+Ou seja, o tipo `(a, ())` (e analogamente `((), a)`) são isomorfos a `a`, pois carregam a mesma informação.
+
+## Uma palavra sobre o Haskell
+
+\centering
+![](figs/1200px-Haskell-Logo.svg.png){width=400px}
+
 
 ## Tipo Produto no Haskell {.fragile}
 
@@ -1240,6 +1303,10 @@ area :: Circunferencia -> Double
 area c = pi*r*r where r = radius c
 ```
 
+## Fim da propaganda!
+
+\centering
+![](figs/1200px-Haskell-Logo.svg.png){width=400px}
 
 ## Tipo Coproduto {.fragile}
 
@@ -1250,9 +1317,10 @@ i :: a -> c
 j :: b -> c
 ```
 
+Nesse padrão estamos injetando valores do tipo `a` ou `b` em `c`. Temos uma **união** de conjuntos.
+
 ## Tipo Coproduto {.fragile}
 
-Agora queremos o padrão dual ao produto!
 
 \centering
 \begin{tikzpicture}[auto, scale=2, transform shape]
@@ -1266,7 +1334,7 @@ Agora queremos o padrão dual ao produto!
 
 ## Tipo Coproduto {.fragile}
 
-A fatoração para rankeamento do melhor tipo para definir o coproduto é:
+Basta invertermos as setas do tipo produto para obter a fatoração do melhor tipo coproduto:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 m :: c -> c'
@@ -1318,11 +1386,13 @@ Um outro exemplo de tipo soma no Haskell é o tipo `Bool` definido como:
 data Bool = True | False
 ```
 
-que é isomórfico a:
+que é isomorfo a:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
 data Bool = Either () ()
 ```
+
+Provem!
 
 ## Tipo Coproduto / Maybe {.fragile}
 
@@ -1344,7 +1414,7 @@ data Absurdo a = Ab a Void = Void
 data Unity a = U a () = a
 
 -- a + 0 = a
-data Soma0 a = a | Void = a
+data Soma0 a = A a | Void = a
 ```
 
 ## Álgebra dos Tipos {.fragile}
@@ -1355,7 +1425,11 @@ Esses tipos também possuem propriedades distributivas entre eles?
 type Alpha a b c = (a, (Either b c))
 
 type Beta a b c = Either (a, b) (a, c)
+```
 
+## Álgebra dos Tipos {.fragile}
+
+```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 f :: Alpha -> Beta
 f (x, Left y)  = Left (x, y)
 f (x, Right y) = Right (x, y)
@@ -1413,7 +1487,7 @@ Esse isomorfismo é conhecido como *Isomorfismo de Curry-Howard* e pode ser este
 Uma outra forma interessante de construção de tipos é através da recursão. Por exemplo, considere o tipo que representa uma lista em Haskell:
 
 ```{.haskell frame=lines framerule=2pt linenos=true}
-data List a = Vazio | (:) a (List a)
+data List a = Vazio | a : (List a)
 ```
 
 ## Tipos Recursivos {.fragile}
@@ -1429,7 +1503,9 @@ que representa a lista `[1,2,3]`.
 
 ## Lista
 
-Quantos valores possíveis temos para um tipo `List a`? Podemos resolver isso algebricamente também definindo `x = List a`:
+Quantos valores possíveis temos para um tipo `List a`? Podemos resolver isso algebricamente definindo `x = List a`.
+
+## Lista
 
 $x = 1 + a \cdot x$
 
@@ -1483,20 +1559,63 @@ Derivando esse tipo, temos:
 
 $x' = 1/(1-a)^2$
 
+## Buraco de uma Lista
+
+$x' = 1/(1-a)^2 = (1/(1-a)) \cdot (1/(1-a))$
+
+O que é isso?
+
 ## Buraco de uma Lista {.fragile}
 
 O buraco de uma lista é o produto de duas listas!
+
+## Buraco de uma Lista {.fragile}
+
+O tipo buraco da lista é conhecido como *Zipper*. A ideia é que, dada uma lista encadeada, essa estrutura permite otimizar o percurso na estrutura.
+
+## Buraco de uma Lista {.fragile}
+
+A ideia é que a lista da direita armazene como primeiro elemento o *foco* atual e todos os elementos que aparecem após esse foco.
+
+A lista da esquerda armazena os elementos anteriores, porém em ordem inversa, para otimizar o percurso.
+
+## Buraco de uma Lista {.fragile}
+
+```haskell
+[] [1,2,3,4,5] -- direita
+[1] [2,3,4,5] -- direita
+[2,1] [3,4,5] -- direita
+[3,2,1] [4,5] -- esquerda
+[2,1] [3,4,5]
+```
+
+## Buraco de uma Lista {.fragile}
+
+A estrutura `Zipper` é definida como:
+
 
 ```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 data Zipper a = Zip [a] [a]
 
 criaZip :: [a] -> Zipper a
 criaZip xs = Zip [] xs
+```
 
+## Buraco de uma Lista {.fragile}
+
+Para andar para esquerda, precisamos recuperar o elemento da primeira lista e inserir no começo da segunda lista:
+
+```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 esq :: Zipper a -> Zipper a
 esq (Zip []     ds) = Zip [] ds
 esq (Zip (e:es) ds) = Zip es (e:ds)
+```
 
+## Buraco de uma Lista {.fragile}
+
+Para andar para direita, precisamos remover o elemento-foco e inserir no começo da primeira lista:
+
+```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 dir :: Zipper a -> Zipper a
 dir (Zip es [])     = Zip es []
 dir (Zip es (d:ds)) = Zip (d:es) ds
@@ -1525,7 +1644,7 @@ zs'' = esq zs'
 
 ## Buraco de uma árvore {.fragile}
 
-Outro `Zipper` interessante é o de uma árvore com elemento apenas nos nós internos:
+Outro `Zipper` interessante pode ser criado a partir de uma árvore com elemento apenas nos nós internos:
 
 ```{.haskell frame=lines framerule=2pt}
 data Tree a = Empty | Node (Tree a) a (Tree a)
@@ -1533,9 +1652,11 @@ data Tree a = Empty | Node (Tree a) a (Tree a)
 
 ## Buraco de uma árvore {.fragile}
 
-Fazendo `Tree a = 1 + a * (Tree a) * (Tree a)` e substituindo `Tree a` por $x$, temos:
+Algebricamente `Tree a = 1 + a * (Tree a) * (Tree a)` e substituindo `Tree a` por $x$, temos:
 
 $x = 1 + a*x^2$
+
+## Buraco de uma árvore {.fragile}
 
 Derivando em função de $a$ temos:
 
@@ -1554,6 +1675,8 @@ Transformando em um tipo algébrico, isso representa o produto entre uma tupla d
 ```
 
 ## Buraco de uma árvore {.fragile}
+
+Em Haskell podemos escrever essa estrutura como:
 
 ```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 data Zipper a = Zip { left  :: Tree a
@@ -1574,17 +1697,23 @@ Cada subárvore é sinalizada com `Left` ou `Right` indicando o caminho tomado p
 
 ## Buraco de uma árvore {.fragile}
 
+A estrutura inicial tem foco na raiz, acima da raiz não temos nada!
+
 ```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 criaZip :: Tree a -> Zipper a
 criaZip Empty = Zip Empty Empty []
 -- Foco inicial não tem ninguém acima dele (Empty)
 criaZip (Node l x r) = Zip l r [Left (x, Empty)]
+```
 
+## Buraco de uma árvore {.fragile}
+
+```{.haskell frame=lines framerule=2pt linenos=true fontsize=\footnotesize baselinestretch=0.8}
 esq :: Zipper a -> Zipper a
 esq tz = 
   case left tz of
     Empty      -> tz  -- se não temos nós a esquerda
-    -- O novo foco é o nó raiz da árvore esquerda
+    -- Caso contrario, o novo foco é o nó raiz da árvore esquerda
     -- acima dele é a árvore direita
     Node l x r -> Zip l r (Left (x, (right tz)) : focus tz)
        
@@ -1671,10 +1800,10 @@ esq tz
 
 ## Atividades para Casa
 
-1. Escreva a definição de Monoid em sua linguagem favorita. Crie um outro exemplo de aplicação.
+1. Que outros tipos formam um Monoid? Escreva uma ou mais instâncias em sua linguagem favorita.
 2. Escreva o operador de composição da categoria Writer na sua linguagem favorita.
-3. Implemente o tipo `Either` na sua segunda linguagem favorita (a primeira sendo o Haskell). Teste com aplicações como Pedra-Papel-Tesoura, o tipo Maybe, etc.
-4. Mostre que os tipos $a + a = 2*a$ são isomórficos.
+3. Implemente o tipo `Either` na sua segunda linguagem favorita (a primeira sendo o Haskell). Teste implementando o tipo Maybe.
+4. Mostre que os tipos $a + a = 2*a$ são isomorfos.
 
 
 ## Atividades para Casa
@@ -1694,7 +1823,7 @@ area (Circle r) = pi * r * r
 area (Rect d h) = d * h
 ```
 
-Implemente a estrutura `Shape` como um `interface` na sua linguagem OOP favorita!
+Implemente a estrutura `Shape` como um `interface` na sua linguagem OOP favorita! Compare a quantidade de linhas de código.
 
 ## Atividades para Casa
 
@@ -1711,3 +1840,7 @@ Acrescente essa função na `interface` criada no exercício anterior. Marque as
 ## Atividades para Casa
 
 7. Adicione a forma `Square` tanto no tipo `Shape` do Haskell como na `interface` implementada por você. O que teve que ser feito em Haskell e na sua linguagem favorita?
+
+## Atividades para Casa
+
+8. [opcional] Implemente os Zippers de lista e árvore binária em sua linguagem favorita (exceto Haskell).
