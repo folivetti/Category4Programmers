@@ -1798,6 +1798,8 @@ esq tz
 (upwards . esq) tz = tz
 ```
 
+# Atividades para Casa
+
 ## Atividades para Casa
 
 1. Que outros tipos formam um Monoid? Escreva uma ou mais instâncias em sua linguagem favorita.
