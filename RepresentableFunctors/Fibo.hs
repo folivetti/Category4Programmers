@@ -28,6 +28,32 @@ f n = f (n-1) + f (n-2)
 t :: Stream Integer
 t = tabulate f
 
+{- F-Algebra -}
+newtype Fix f = Fix (f (Fix f))
+
+unFix :: Fix f -> f (Fix f)
+unFix (Fix x) = x
+
+cata :: Functor f => (f a -> a) -> Fix f -> a
+cata alg = alg . fmap (cata alg) . unFix
+
+data NatF a = ZeroF | SuccF a
+
+instance Functor NatF where
+  fmap f ZeroF = ZeroF
+  fmap f (SuccF x) = SuccF (f x)
+
+n2nat :: Integer -> Fix NatF
+n2nat 0 = Fix ZeroF
+n2nat x = Fix (SuccF (n2nat (x-1)))
+
+fib :: NatF (Integer, Integer) -> (Integer, Integer)
+fib ZeroF = (0, 1)
+fib (SuccF (m, n)) = (n, m + n)
+
+catafib :: Fix NatF -> (Integer, Integer)
+catafib = cata fib
+
 main :: IO ()
 main = do
   args <- getArgs
@@ -40,4 +66,8 @@ main = do
                       let i = read k
                       print $ index t i
                       print $ index t i  
+    [k, "--alg"] -> do
+                      let i = read k
+                      print $ catafib (n2nat i)
+                      print $ catafib (n2nat i) 
     _ -> error "Wrong arguments"

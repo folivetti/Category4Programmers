@@ -1,0 +1,30 @@
+{-# LANGUAGE DeriveFunctor #-}
+
+module Main where
+
+type Algebra f a = f a -> a
+newtype Fix f = Fix (f (Fix f))
+
+unFix :: Fix f -> f (Fix f)
+unFix (Fix x) = x
+
+cata :: Functor f => (f a -> a) -> Fix f -> a
+cata alg = alg . fmap (cata alg) . unFix
+
+data RingF a = RZero
+             | ROne
+             | RAdd a a 
+             | RMul a a
+             | RNeg a
+             deriving (Functor, Show)
+             
+evalZ :: Algebra RingF Integer
+evalZ RZero      = 0
+evalZ ROne       = 1
+evalZ (RAdd m n) = m + n
+evalZ (RMul m n) = m * n
+evalZ (RNeg n)   = -n
+
+evalFix = cata evalZ
+
+main = do print "a"

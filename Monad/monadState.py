@@ -1,4 +1,5 @@
 import random
+from functools import partial
 
 class State:
   # State s -> (a, s)
@@ -10,40 +11,62 @@ class State:
 
   def unit(self, x):
     return State(lambda s: (x, s))
+    
+  def fmap(self, f):
+    return State(lambda s: applytoState(f,self.r(s)))
 
   def bind(self, k):
     def f(s):
       (a, sn) = self.run(s)
       return k(a).run(sn)
     return State(f)
-
+    
+def applytoState(f, st):
+  return (f(st[0]), st[1])
   
-getSt = State(lambda s: (s, s))
-setSt = State(lambda s: (None, s))
+def change(b, p):  
+  if p < 0.3:
+    return not b #State().unit(not b)
+  return b #State().unit(b)
+
+# [State bool] -> State [bool]
+def sequence(ss):
+  def f(s):
+    xs = []
+    for si in ss:
+      (x, s) = si.run(s)
+      xs.append(x)
+    return (xs, s)
+  return State(f)
 
 def mutation(bs):
-  if len(bs)==0:
-    return State().unit([])
+  return sequence([myRandST.fmap(partial(change,b)) 
+                         for b in bs])
+
+def select(b, p):
+  if p < 0.3 and b:
+    return [b]
+  return []
   
-  b = bs.pop()
-
-  myRandST = State(myRand)
-
-  def ifthenelse(bsm, p):
-    if p < 0.3:
-      return State().unit([not b] + bsm)
-    else:
-      return State().unit([b] + bsm)
-  
-  return (mutation(bs)
-          .bind(lambda bsm: myRandST
-                            .bind(lambda p: ifthenelse(bsm, p))
-               )
-         )
-
+def concat(xss):
+  return [x for xs in xss
+              for x in xs]
+              
+def selection(bs):  
+  return sequence([myRandST.fmap(partial(select,b)) 
+                         for b in bs]).fmap(concat)
+                         
 def myRand(s):
   random.setstate(s)
   x = random.random()
   return x, random.getstate()
 
-print(mutation([True, True, False, True]).run(random.getstate())[0])
+myRandST = State(myRand)
+
+bs = [True]*10
+bs1 = (mutation(bs)
+        .bind(selection)
+        .run(random.getstate())
+      )
+
+print( bs, bs1[0] )

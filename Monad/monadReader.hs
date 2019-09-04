@@ -52,8 +52,10 @@ f2'' xs = fmap thr ask >>= gof3
 
 algorithm'' :: [Double] -> Reader Config [Double]
 algorithm'' xs = fmap alg ask >>= choice
-  where choice a | a == "f2" = f2'' xs
-                 | otherwise = f3'' xs
+  where choice "f2" = f2'' xs
+        choice _    = f3'' xs
+--  where choice a | a == "f2" = f2'' xs
+--                 | otherwise = f3'' xs
 
 main = do
   let xs = [1.0, 2.0 .. 10.0]

@@ -15,15 +15,23 @@ mutation'' :: [Bool] -> State StdGen [Bool]
 mutation'' bs = state (\s -> (zipWith ($) (fst $ runState fs s) bs, s))
   where fs = sequence [mutatePoint | _ <- bs]
 
+changeAndconcat :: Bool -> [Bool] -> Double -> [Bool]
+changeAndconcat b bs p = if p < 0.3
+                         then  (not b : bs)
+                         else  (b : bs)
+                         
 mutation :: [Bool] -> State StdGen [Bool]
+-- se a lista estiver vazia, nada a fazer
 mutation [] = return []
 
-mutation (b:bs) = (mutation >=> choice) bs
+-- aplica o algoritmo no restante da lista, 
+-- o estado atual do gerador é passado implicitamente 
+-- para a função
+mutation (b:bs) = (mutation >=> change) bs
   where
-     choice bs' = randomSt >>= concat bs'
-     concat bs' p = if p < 0.3
-                    then return (not b : bs')
-                    else return (b : bs')
+     change bs' = randomSt >>= toState (changeAndconcat b bs')
+     toState f  = \x -> return (f x)
+
          
 mutation' :: [Bool] -> State StdGen [Bool]
 mutation' [] = return []

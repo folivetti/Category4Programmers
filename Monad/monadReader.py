@@ -3,14 +3,14 @@ from collections import namedtuple
 '''
 Config struct and functions
 '''
-Conf = namedtuple('Conf', ['alg', 'thr', 'it'])
+Conf = namedtuple('Conf', ['numberOfElems', 'filtro', 'transform'])
 
-def alg(c):
-  return c.alg
-def thr(c):
-  return c.thr
-def it(c):
-  return c.it
+def numberOfElems(c):
+  return c.numberOfElems
+def filtro(c):
+  return c.filtro
+def transform(c):
+  return c.transform
 
 '''
 Reader Monad class
@@ -37,6 +37,11 @@ class Reader():
       rb = fab(a)
       return rb.run(e)
     return Reader(f)
+    
+def composeMonad(f, g):
+  def k(a):
+    return f(a).bind(g)
+  return k
 
 def ask(e):
   return e
@@ -47,32 +52,42 @@ def askFor(f):
 '''
 Example of use
 '''
+def recupera(tipo, xs):
+  if tipo == "filtra":
+    return filtra(xs)
+  else:
+    return transforma(xs)
 
-def go(it, xs):
-  ys = []
-  for x in xs:
-    ys.append(it*x)
-    it = it - 1
-  return ys
+def filtra(xs):
+  f = composeMonad( composeMonad(aplicaFiltro, pega),
+                    aplicaMap
+                  )
+  return f(xs)
+  
+def transforma(xs):
+  f = composeMonad(pega, aplicaMap)
+  return f(xs)
+    
+def aplicaFiltro(xs):
+  filtroXS = lambda f: filter(f, xs)
+  return askFor(filtro).fmap(filtroXS)
 
-def f3(xs):
-  # ask for it and pass to 'runGo'
-  runGo = lambda t: Reader().unit(go(t, xs))
-  return (askFor(it)
-          .bind(runGo))
+def aplicaMap(xs):
+  mapXS = lambda f: map(f, xs)
+  return askFor(transform).fmap(mapXS)
 
-def f2(xs):
-  # ask for a thr and pass to 'gof3'
-  gof3 = lambda t: f3(filter(lambda x: x<t, xs))
-  return (askFor(thr)
-          .bind(gof3))
+def pega(xs):
+  pegaXS = lambda n: list(xs)[:n]
+  return askFor(numberOfElems).fmap(pegaXS)
+  
+def bindTo(p, f):
+    return askFor(p).bind(lambda x: Reader().unit(f(x)))
 
-def algorithm(xs):
-  f = {"f2" : f2, "f3" : f3}
-  choice = lambda algo: f[algo](xs)
-  return (askFor(alg)
-          .bind(choice))
-
-c = Conf("f2", 2.5, 5)
-print(algorithm(range(1,11))
-      .run(c))
+def even(x):
+  return x%2==0
+def square(x):
+  return x*x
+    
+myCF = Conf(10, even, square)
+print( list(recupera("transforma", range(1, 100)).run(myCF)) )
+print( list(recupera("filtra", range(1, 100)).run(myCF)) )

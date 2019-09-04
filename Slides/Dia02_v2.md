@@ -708,12 +708,21 @@ Com isso nossa ordenação fica:
 ```Haskell
 cmpPerson'   = contramap age cmpAge
 cmpEmployee' = contramap person cmpPerson'
--- ou cmpEmploee' = person `contramap` cmpPerson'
 ```
 
-## Composição de Comparadores {.fragile}
+## Exemplo de aplicação: Composição de Comparadores {.fragile}
 
-Escreva o Bifunctor em `a, b` para os seguintes tipos (`p, q` são Functors):
+Podemos também inverter a ordem dos argumentos e construir a função `cmpAgeFrom`:
+
+```Haskell
+cmpAgeFrom = (flip contramap) cmpAge
+cmpPerson   = cmpAgeFrom age
+cmpEmployee = cmpAgeFrom (age.person)
+```
+
+## Exercício {.fragile}
+
+Escreva o Bifunctor em `a, b` para os seguintes tipos (`p, q` são Bifunctors):
 
 ```Haskell
 data K2 c a b = K2 c
@@ -1292,13 +1301,7 @@ main = do
 
 Mensurando o tempo de execução desse programa utilizando ou não o Representable Functor, temos:
 
-```Bash
-time ./fib 36
-real	0m4.176s
-
-time ./fib 36 --rep
-real	0m2.098s
-```
+![Tempo de execução](figs/RepresentableTime.png){width=300px}
 
 # Lema de Yoneda
 
@@ -1496,6 +1499,24 @@ Agora, se fizermos `(fromCY . transform . toCY) t`{.haskell}, teremos:
 = fromCY (CY ((^2) . (+1) . (*2) . id) t)
 = fmap ((^2) . (+1) . (*2) . id) t
 ```
+
+\attachfile{files/embed.hs}
+
+## Fmap Fusion {.fragile}
+
+![Tempo com e sem fusão - sem otimização](figs/CoyoNoOpt.png){width=250px}
+
+## Fmap Fusion {.fragile}
+
+![Tempo com e sem fusão - O1](figs/CoyoO1.png){width=250px}
+
+## Fmap Fusion {.fragile}
+
+![Tempo com e sem fusão - O2](figs/CoyoO2.png){width=250px}
+
+## Fmap Fusion {.fragile}
+
+![Tempo com e sem fusão - O3](figs/CoyoO3.png){width=250px}
 
 ## Fmap Fusion {.fragile}
 
