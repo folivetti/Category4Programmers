@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveFunctor #-}
+
 module Main where
 
 import System.Environment
@@ -30,11 +32,32 @@ unfoldTree = removeRoot . cata getSols
 genAllSolutions :: Int -> [Solution]
 genAllSolutions n = (removeRoot . hylo getSols genBranch) (0, S.fromList [1..n])
 
+-- | BFS
+data ListF e a = EmptyF | ConsF e a
+  deriving Functor
+
+coalgBFS :: Coalgebra (ListF [Solution]) ([Solution], [Solution])
+coalgBFS (xs, [[]]) = EmptyF
+coalgBFS (xs, seed) = ConsF xs' (xs', seed)
+  where isFeasible      = filter feasible
+        cartesian ys zs = [y <> z | y <- ys, z <- zs]
+        xs'             = isFeasible (cartesian xs seed)
+
+toList EmptyF        = []
+toList (ConsF xss a) = xss ++ a
+
+nqueensBFS :: Int -> [Int]
+nqueensBFS n = let seed      = fmap (:[]) [1..n]
+                   sols      = hylo toList coalgBFS (seed, seed)
+                   isGoal xs = length xs == n
+                   xs        = (filter isGoal) sols
+               in  head xs
+
 -- |  N-Queen
 -- | Check for infeasible solutions
 infeasible :: Solution -> Bool
 infeasible []     = False
-infeasible (r:rs) = attack r rs || infeasible rs
+infeasible (r:rs) = r `elem` rs || attack r rs || infeasible rs
 
 -- | Check if a row is attacking another row of a solution
 attack :: Int -> Solution -> Bool
@@ -63,3 +86,6 @@ main = do
   
   putStrLn ("\nSolution to N-Queen for N=" ++ show n ++ ":")
   print (nqueen n)
+  
+  putStrLn ("\nSolution to N-Queen (bfs) for N=" ++ show n ++ ":")
+  print (nqueensBFS n)
